@@ -22,6 +22,7 @@
       --text:     #f0eeea;
       --muted:    #8888aa;
       --red:      #e05050;
+      --green:    #6de06d;
     }
 
     body {
@@ -58,32 +59,24 @@
       border-radius: 6px;
       text-transform: uppercase;
     }
-    .topbar-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
+    .topbar-title { font-size: 18px; font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .live-badge {
       display: flex; align-items: center; gap: 6px;
       background: rgba(80,200,80,0.12);
       border: 1px solid rgba(80,200,80,0.3);
-      color: #6de06d;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 12px;
-      border-radius: 20px;
+      color: var(--green);
+      font-size: 12px; font-weight: 600;
+      padding: 5px 12px; border-radius: 20px;
     }
     .live-dot {
       width: 7px; height: 7px;
-      background: #6de06d;
+      background: var(--green);
       border-radius: 50%;
       animation: pulse-green 1.4s infinite;
     }
-    @keyframes pulse-green {
-      0%,100% { opacity: 1; }
-      50%      { opacity: 0.3; }
-    }
+    @keyframes pulse-green { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
     .btn {
       border: none; cursor: pointer;
@@ -92,9 +85,7 @@
       padding: 8px 16px; border-radius: 9px;
       transition: all 0.15s;
     }
-    .btn-gold {
-      background: var(--gold); color: #0b0b14;
-    }
+    .btn-gold  { background: var(--gold); color: #0b0b14; }
     .btn-gold:hover { background: #f5d060; transform: translateY(-1px); }
     .btn-outline {
       background: transparent;
@@ -108,11 +99,17 @@
       color: var(--red);
     }
     .btn-danger:hover { background: rgba(224,80,80,0.2); }
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-accent:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
 
     /* ── MAIN LAYOUT ── */
     .main {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 380px 1fr;
       gap: 0;
       height: calc(100dvh - 65px);
       overflow: hidden;
@@ -124,8 +121,8 @@
       border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 24px 20px;
-      gap: 24px;
+      padding: 20px;
+      gap: 20px;
       overflow-y: auto;
     }
 
@@ -138,22 +135,51 @@
       margin-bottom: 10px;
     }
 
-    /* question editor */
-    .question-display {
+    /* ── QUESTION NAVIGATOR ── */
+    .q-nav-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 18px;
+      padding: 16px;
     }
-    .question-display p {
+
+    .q-counter {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .q-counter-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .q-text {
       font-size: 15px;
       font-weight: 500;
       line-height: 1.6;
       color: var(--text);
       margin-bottom: 14px;
+      min-height: 48px;
     }
-    .question-display textarea {
+
+    .q-nav-btns {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .q-nav-btns .btn { flex: 1; font-size: 14px; padding: 10px; }
+
+    .q-edit-area {
       display: none;
+    }
+    .q-edit-area textarea {
       width: 100%;
       background: var(--bg);
       border: 1px solid var(--border);
@@ -166,13 +192,104 @@
       resize: none;
       min-height: 90px;
       outline: none;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       direction: rtl;
     }
-    .question-display textarea:focus {
-      border-color: var(--accent);
+    .q-edit-area textarea:focus { border-color: var(--accent); }
+    .q-edit-btns { display: flex; gap: 8px; }
+
+    /* ── QUESTIONS LIST ── */
+    .questions-list-wrap {
+      flex: 1;
+      min-height: 0;
     }
-    .q-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .q-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-left: 2px;
+    }
+    .q-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .q-list-item:hover { background: var(--card2); border-color: rgba(255,255,255,0.14); }
+    .q-list-item.active {
+      border-color: var(--gold);
+      background: rgba(240,192,64,0.07);
+    }
+    .q-list-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 22px;
+      padding-top: 2px;
+    }
+    .q-list-item.active .q-list-num { color: var(--gold); }
+    .q-list-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .q-list-item.active .q-list-text { color: var(--text); }
+    .q-list-count {
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .q-list-del {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.5;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .q-list-del:hover { opacity: 1; color: var(--red); }
+
+    /* add question */
+    .add-q-wrap {
+      margin-top: 10px;
+    }
+    .add-q-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Heebo', sans-serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      direction: rtl;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+    .add-q-input:focus { border-color: var(--accent); border-style: solid; }
+    .add-q-input::placeholder { color: var(--muted); opacity: 0.5; }
 
     /* stats */
     .stats-row {
@@ -211,7 +328,6 @@
       flex-direction: column;
       gap: 14px;
     }
-
     .answers-header {
       display: flex;
       align-items: center;
@@ -219,12 +335,8 @@
       margin-bottom: 8px;
       flex-shrink: 0;
     }
-    .answers-title {
-      font-size: 20px;
-      font-weight: 800;
-    }
+    .answers-title { font-size: 20px; font-weight: 800; }
 
-    /* empty state */
     .empty-state {
       flex: 1;
       display: flex;
@@ -236,14 +348,10 @@
       text-align: center;
       padding: 60px 20px;
     }
-    .empty-icon {
-      font-size: 48px;
-      opacity: 0.3;
-    }
+    .empty-icon { font-size: 48px; opacity: 0.3; }
     .empty-text { font-size: 16px; }
     .empty-sub  { font-size: 13px; opacity: 0.6; }
 
-    /* answer card */
     .answer-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -257,33 +365,14 @@
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .answer-card:hover {
-      border-color: rgba(255,255,255,0.14);
-      background: var(--card2);
-    }
-
+    .answer-card:hover { border-color: rgba(255,255,255,0.14); background: var(--card2); }
     .answer-number {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      margin-bottom: 8px;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.1em; margin-bottom: 8px;
     }
-    .answer-text {
-      font-size: 16px;
-      line-height: 1.65;
-      font-weight: 400;
-    }
-    .answer-time {
-      font-size: 11px;
-      color: var(--muted);
-      opacity: 0.5;
-      margin-top: 10px;
-      text-align: left;
-      direction: ltr;
-    }
+    .answer-text  { font-size: 16px; line-height: 1.65; font-weight: 400; }
+    .answer-time  { font-size: 11px; color: var(--muted); opacity: 0.5; margin-top: 10px; text-align: left; direction: ltr; }
 
-    /* new-answer highlight */
     .answer-card.new-flash {
       border-color: var(--gold);
       box-shadow: 0 0 16px var(--glow);
@@ -321,8 +410,7 @@
       background: var(--card2);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 12px 20px; border-radius: 10px;
       font-size: 13px; font-weight: 500;
       transform: translateY(60px); opacity: 0;
       transition: all 0.3s;
@@ -332,7 +420,7 @@
 
     @media (max-width: 768px) {
       .main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-      .sidebar { border-left: none; border-bottom: 1px solid var(--border); max-height: 320px; }
+      .sidebar { border-left: none; border-bottom: 1px solid var(--border); max-height: 380px; }
       .answers-panel { padding: 20px 16px; }
     }
   </style>
@@ -360,24 +448,67 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
 
+    <!-- CURRENT QUESTION NAVIGATOR -->
     <div>
-      <div class="sidebar-section-title">הדילמה הנוכחית</div>
-      <div class="question-display" id="questionDisplay">
-        <p id="questionParagraph">טוען…</p>
-        <textarea id="questionEditor" placeholder="הקלד/י שאלה חדשה…"></textarea>
-        <div class="q-actions">
-          <button class="btn btn-gold" id="editSaveBtn" onclick="toggleEdit()">ערוך שאלה</button>
-          <button class="btn btn-outline" id="cancelBtn" onclick="cancelEdit()" style="display:none">ביטול</button>
+      <div class="sidebar-section-title">שאלה פעילה</div>
+      <div class="q-nav-card">
+        <div class="q-counter">
+          <span id="qCounterText">שאלה 1 מתוך 1</span>
+          <span class="q-counter-badge" id="qAnswersBadge">0 תשובות</span>
+        </div>
+
+        <div class="q-text" id="qCurrentText">טוען…</div>
+
+        <!-- nav buttons -->
+        <div class="q-nav-btns">
+          <button class="btn btn-outline" id="btnPrev" onclick="navigateQ(-1)" disabled>◀ הקודם</button>
+          <button class="btn btn-gold" id="btnNext" onclick="navigateQ(1)">הבא ▶</button>
+        </div>
+
+        <!-- edit current question -->
+        <div id="qEditArea" class="q-edit-area">
+          <textarea id="qEditTextarea" placeholder="ערוך את השאלה…"></textarea>
+          <div class="q-edit-btns">
+            <button class="btn btn-accent" onclick="saveEditQ()">שמור</button>
+            <button class="btn btn-outline" onclick="cancelEditQ()">ביטול</button>
+          </div>
+        </div>
+        <div id="qViewActions">
+          <button class="btn btn-outline" style="width:100%;font-size:12px" onclick="startEditQ()">✏️ ערוך שאלה זו</button>
         </div>
       </div>
     </div>
 
+    <!-- QUESTIONS LIST -->
+    <div class="questions-list-wrap">
+      <div class="sidebar-section-title">
+        <div class="q-list-header">
+          <span>כל השאלות</span>
+        </div>
+      </div>
+      <div class="questions-list" id="questionsList"></div>
+
+      <!-- add new question -->
+      <div class="add-q-wrap">
+        <input
+          type="text"
+          class="add-q-input"
+          id="newQInput"
+          placeholder="+ הוסף שאלה חדשה…"
+          onkeydown="handleAddQ(event)"
+          maxlength="300"
+        />
+        <button class="btn btn-accent" style="width:100%;font-size:13px" onclick="addQuestion()">הוסף שאלה</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
     <div>
-      <div class="sidebar-section-title">סטטיסטיקה</div>
+      <div class="sidebar-section-title">סטטיסטיקה — שאלה נוכחית</div>
       <div class="stats-row">
         <div class="stat-box">
           <div class="stat-num" id="statTotal">0</div>
-          <div class="stat-label">תשובות נשלחו</div>
+          <div class="stat-label">תשובות לשאלה זו</div>
         </div>
         <div class="stat-box">
           <div class="stat-num" id="statLast">—</div>
@@ -386,10 +517,11 @@
       </div>
     </div>
 
+    <!-- DANGER ZONE -->
     <div class="danger-zone">
       <div class="sidebar-section-title">אזור מנהל</div>
       <button class="btn btn-danger" onclick="openClearModal()" style="width:100%">
-        🗑 נקה את כל התשובות
+        🗑 נקה תשובות לשאלה הנוכחית
       </button>
     </div>
 
@@ -398,7 +530,7 @@
   <!-- ANSWERS PANEL -->
   <section class="answers-panel" id="answersPanel">
     <div class="answers-header">
-      <div class="answers-title">תשובות המשתתפים</div>
+      <div class="answers-title" id="answersPanelTitle">תשובות המשתתפים</div>
     </div>
     <div class="empty-state" id="emptyState">
       <div class="empty-icon">💬</div>
@@ -412,10 +544,10 @@
 <!-- CLEAR MODAL -->
 <div class="modal-overlay" id="clearModal">
   <div class="modal">
-    <h3>נקה את כל התשובות?</h3>
-    <p>פעולה זו תמחק את כל התשובות שנאספו עד כה. לא ניתן לבטל פעולה זו.</p>
+    <h3>נקה תשובות לשאלה הנוכחית?</h3>
+    <p>פעולה זו תמחק את כל התשובות לשאלה הפעילה כעת. לא ניתן לבטל פעולה זו.</p>
     <div class="modal-actions">
-      <button class="btn btn-danger" onclick="clearAnswers()">כן, מחק הכל</button>
+      <button class="btn btn-danger" onclick="clearAnswers()">כן, מחק</button>
       <button class="btn btn-outline" onclick="closeClearModal()">ביטול</button>
     </div>
   </div>
@@ -424,68 +556,184 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ── STATE ──
+  let questions = [];
+  let currentIndex = 0;
   let answers = [];
   let knownIds = new Set();
+  let answerCounts = {}; // index -> count (for list display)
   let isEditing = false;
-  let currentQuestion = '';
 
-  // ── QUESTION ──
-  async function loadQuestion() {
+  // ── LOAD STATE ──
+  async function loadState() {
     try {
-      const res = await fetch('/api/question');
+      const res = await fetch('/api/questions');
       const d = await res.json();
-      currentQuestion = d.question;
-      document.getElementById('questionParagraph').textContent = currentQuestion;
-      document.getElementById('questionEditor').value = currentQuestion;
-    } catch {}
-  }
-
-  function toggleEdit() {
-    if (!isEditing) {
-      isEditing = true;
-      document.getElementById('questionParagraph').style.display = 'none';
-      const ed = document.getElementById('questionEditor');
-      ed.style.display = 'block';
-      ed.focus();
-      document.getElementById('editSaveBtn').textContent = 'שמור שאלה';
-      document.getElementById('cancelBtn').style.display = 'inline-block';
-    } else {
-      saveQuestion();
+      questions = d.questions || [];
+      currentIndex = d.currentIndex || 0;
+      renderQuestionsList();
+      renderCurrentQuestion();
+      knownIds.clear();
+      answers = [];
+      await fetchAnswers();
+      await fetchAllCounts();
+    } catch(e) {
+      console.error(e);
     }
   }
 
-  function cancelEdit() {
-    isEditing = false;
-    document.getElementById('questionParagraph').style.display = 'block';
-    document.getElementById('questionEditor').style.display = 'none';
-    document.getElementById('editSaveBtn').textContent = 'ערוך שאלה';
-    document.getElementById('cancelBtn').style.display = 'none';
-    document.getElementById('questionEditor').value = currentQuestion;
+  // ── RENDER CURRENT QUESTION ──
+  function renderCurrentQuestion() {
+    const q = questions[currentIndex] || '—';
+    document.getElementById('qCurrentText').textContent = q;
+    document.getElementById('qCounterText').textContent =
+      `שאלה ${currentIndex + 1} מתוך ${questions.length}`;
+    document.getElementById('answersPanelTitle').textContent =
+      `תשובות — שאלה ${currentIndex + 1}`;
+    document.getElementById('btnPrev').disabled = currentIndex === 0;
+    document.getElementById('btnNext').disabled = currentIndex >= questions.length - 1;
   }
 
-  async function saveQuestion() {
-    const newQ = document.getElementById('questionEditor').value.trim();
-    if (!newQ) { showToast('השאלה לא יכולה להיות ריקה'); return; }
-    try {
-      await fetch('/api/question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: newQ })
+  // ── RENDER QUESTIONS LIST ──
+  function renderQuestionsList() {
+    const list = document.getElementById('questionsList');
+    list.innerHTML = '';
+    questions.forEach((q, i) => {
+      const item = document.createElement('div');
+      item.className = 'q-list-item' + (i === currentIndex ? ' active' : '');
+      item.innerHTML = `
+        <span class="q-list-num">${i + 1}</span>
+        <span class="q-list-text" title="${escapeHTML(q)}">${escapeHTML(q)}</span>
+        <span class="q-list-count">${answerCounts[i] !== undefined ? answerCounts[i] + ' ✓' : ''}</span>
+        <button class="q-list-del" onclick="deleteQuestion(event, ${i})" title="מחק שאלה">×</button>
+      `;
+      item.addEventListener('click', (e) => {
+        if (e.target.classList.contains('q-list-del')) return;
+        jumpToQuestion(i);
       });
-      currentQuestion = newQ;
-      document.getElementById('questionParagraph').textContent = newQ;
-      cancelEdit();
-      knownIds.clear();
-      answers = [];
-      renderAnswers();
-      showToast('השאלה עודכנה — התשובות אופסו');
-    } catch { showToast('שגיאה בשמירת השאלה'); }
+      list.appendChild(item);
+    });
+  }
+
+  // ── NAVIGATE ──
+  async function navigateQ(delta) {
+    const newIndex = currentIndex + delta;
+    if (newIndex < 0 || newIndex >= questions.length) return;
+    currentIndex = newIndex;
+    knownIds.clear();
+    answers = [];
+    await saveCurrentIndex();
+    renderCurrentQuestion();
+    renderQuestionsList();
+    renderAnswers();
+    await fetchAnswers();
+  }
+
+  async function jumpToQuestion(i) {
+    if (i === currentIndex) return;
+    currentIndex = i;
+    knownIds.clear();
+    answers = [];
+    await saveCurrentIndex();
+    renderCurrentQuestion();
+    renderQuestionsList();
+    renderAnswers();
+    await fetchAnswers();
+  }
+
+  async function saveCurrentIndex() {
+    await fetch('/api/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentIndex })
+    });
+  }
+
+  // ── EDIT CURRENT QUESTION ──
+  function startEditQ() {
+    isEditing = true;
+    document.getElementById('qEditTextarea').value = questions[currentIndex] || '';
+    document.getElementById('qEditArea').style.display = 'block';
+    document.getElementById('qViewActions').style.display = 'none';
+    document.getElementById('qEditTextarea').focus();
+  }
+
+  function cancelEditQ() {
+    isEditing = false;
+    document.getElementById('qEditArea').style.display = 'none';
+    document.getElementById('qViewActions').style.display = 'block';
+  }
+
+  async function saveEditQ() {
+    const newText = document.getElementById('qEditTextarea').value.trim();
+    if (!newText) { showToast('השאלה לא יכולה להיות ריקה'); return; }
+    questions[currentIndex] = newText;
+    await saveQuestions();
+    renderCurrentQuestion();
+    renderQuestionsList();
+    cancelEditQ();
+    showToast('השאלה עודכנה');
+  }
+
+  // ── ADD QUESTION ──
+  function handleAddQ(e) {
+    if (e.key === 'Enter') addQuestion();
+  }
+
+  async function addQuestion() {
+    const input = document.getElementById('newQInput');
+    const text = input.value.trim();
+    if (!text) { showToast('הקלד/י שאלה לפני הוספה'); return; }
+    questions.push(text);
+    input.value = '';
+    await saveQuestions();
+    renderQuestionsList();
+    showToast('שאלה נוספה');
+    // auto-scroll list to bottom
+    const list = document.getElementById('questionsList');
+    list.scrollTop = list.scrollHeight;
+  }
+
+  // ── DELETE QUESTION ──
+  async function deleteQuestion(e, i) {
+    e.stopPropagation();
+    if (questions.length <= 1) { showToast('חייבת להיות לפחות שאלה אחת'); return; }
+    questions.splice(i, 1);
+    if (currentIndex >= questions.length) currentIndex = questions.length - 1;
+    await saveQuestions();
+    knownIds.clear();
+    answers = [];
+    renderCurrentQuestion();
+    renderQuestionsList();
+    renderAnswers();
+    await fetchAnswers();
+    showToast('השאלה נמחקה');
+  }
+
+  async function saveQuestions() {
+    await fetch('/api/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questions, currentIndex })
+    });
+  }
+
+  // ── FETCH ALL ANSWER COUNTS (for list display) ──
+  async function fetchAllCounts() {
+    for (let i = 0; i < questions.length; i++) {
+      try {
+        const res = await fetch(`/api/answers?q=${i}`);
+        const data = await res.json();
+        answerCounts[i] = Array.isArray(data) ? data.length : 0;
+      } catch { answerCounts[i] = 0; }
+    }
+    renderQuestionsList();
   }
 
   // ── ANSWERS POLLING ──
   async function fetchAnswers() {
     try {
-      const res = await fetch('/api/answers');
+      const res = await fetch(`/api/answers?q=${currentIndex}`);
       const data = await res.json();
 
       const newOnes = data.filter(a => !knownIds.has(a.id));
@@ -493,6 +741,9 @@
         newOnes.forEach(a => knownIds.add(a.id));
         answers = data;
         renderAnswers(newOnes.map(a => a.id));
+        // update count for this question
+        answerCounts[currentIndex] = data.length;
+        renderQuestionsList();
       }
     } catch {}
   }
@@ -500,8 +751,6 @@
   function renderAnswers(flashIds = []) {
     const panel = document.getElementById('answersPanel');
     const empty = document.getElementById('emptyState');
-
-    // remove old cards
     panel.querySelectorAll('.answer-card').forEach(c => c.remove());
 
     if (answers.length === 0) {
@@ -527,6 +776,7 @@
 
   function updateStats() {
     document.getElementById('statTotal').textContent = answers.length;
+    document.getElementById('qAnswersBadge').textContent = answers.length + ' תשובות';
     if (answers.length > 0) {
       const last = answers[answers.length - 1];
       document.getElementById('statLast').textContent = formatTime(last.timestamp);
@@ -535,24 +785,26 @@
     }
   }
 
-  // ── CLEAR ──
+  // ── CLEAR ANSWERS ──
   function openClearModal()  { document.getElementById('clearModal').classList.add('open'); }
   function closeClearModal() { document.getElementById('clearModal').classList.remove('open'); }
 
   async function clearAnswers() {
     try {
-      await fetch('/api/answers', { method: 'DELETE' });
+      await fetch(`/api/answers?q=${currentIndex}`, { method: 'DELETE' });
       answers = [];
       knownIds.clear();
+      answerCounts[currentIndex] = 0;
       renderAnswers();
+      renderQuestionsList();
       closeClearModal();
-      showToast('כל התשובות נמחקו');
+      showToast('תשובות השאלה הנוכחית נמחקו');
     } catch { showToast('שגיאה במחיקה'); }
   }
 
   // ── UTILS ──
   function escapeHTML(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function formatTime(iso) {
@@ -568,10 +820,15 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
+  // ── POLLING ──
+  let pollInterval;
+  function startPolling() {
+    clearInterval(pollInterval);
+    pollInterval = setInterval(fetchAnswers, 3000);
+  }
+
   // ── INIT ──
-  loadQuestion();
-  fetchAnswers();
-  setInterval(fetchAnswers, 3000);
+  loadState().then(() => startPolling());
 </script>
 </body>
 </html>
