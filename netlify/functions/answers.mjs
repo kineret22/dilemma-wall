@@ -1,21 +1,78 @@
+import { getStore } from "@netlify/blobs";
 
-For each file:
+export default async (req, context) => {
+  const store = getStore("dilemma-answers");
 
-Go to your repository on github.com
-Navigate to the file's folder:
+  // questionIndex from query param, defaults to 0
+  const url = new URL(req.url);
+  const qi = url.searchParams.get("q") || "0";
+  const answersKey = `answers-q${qi}`;
 
-For questions.mjs and answers.mjs → click into netlify → functions
-For moderator.html and index.html → click into public
+  if (req.method === "GET") {
+    try {
+      const data = await store.get(answersKey, { type: "json" });
+      return Response.json(data || []);
+    } catch {
+      return Response.json([]);
+    }
+  }
 
+  if (req.method === "POST") {
+    try {
+      const body = await req.json();
+      const { text } = body;
 
-Click the filename to open it
-Click the pencil icon (Edit) in the top-right of the file view
-Select all the existing code (Ctrl+A / Cmd+A) and delete it
-Open the downloaded file in a text editor (Notepad, TextEdit, VS Code), select all and copy
-Paste into the GitHub editor
-Scroll down to "Commit changes"
+      if (!text || typeof text !== "string" || text.trim().length === 0) {
+        return Response.json({ error: "תשובה ריקה" }, { status: 400 });
+      }
+      if (text.trim().length > 500) {
+        return Response.json({ error: "התשובה ארוכה מדי" }, { status: 400 });
+      }
 
-Leave the default commit message or write something like Update questions.mjs
-Make sure "Commit directly to the main branch" is selected
+      let answers = [];
+      try {
+        answers = (await store.get(answersKey, { type: "json" })) || [];
+      } catch {}
 
+      const newAnswer = {
+        id: Date.now().toString(),
+        text: text.trim(),
+        timestamp: new Date().toISOString(),
+      };
 
+      answers.push(newAnswer);
+      await store.set(answersKey, JSON.stringify(answers));
+      return Response.json({ success: true, id: newAnswer.id });
+    } catch (err) {
+      return Response.json({ error: "שגיאה בשמירה" }, { status: 500 });
+    }
+  }
+
+  if (req.method === "DELETE") {
+    try {
+      // if ?q=all — clear all questions' answers
+      if (qi === "all") {
+        // get questions count to clear all
+        let count = 10; // safe upper bound
+        try {
+          const state = await store.get("questions-state", { type: "json" });
+          if (state) count = state.questions.length;
+        } catch {}
+        for (let i = 0; i < count; i++) {
+          await store.set(`answers-q${i}`, JSON.stringify([]));
+        }
+      } else {
+        await store.set(answersKey, JSON.stringify([]));
+      }
+      return Response.json({ success: true });
+    } catch {
+      return Response.json({ error: "שגיאה במחיקה" }, { status: 500 });
+    }
+  }
+
+  return Response.json({ error: "Method not allowed" }, { status: 405 });
+};
+
+export const config = {
+  path: "/api/answers",
+};
