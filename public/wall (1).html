@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>קיר הדילמות — תצוגה ציבורית</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0b0b14;
+      --surface:  #13131f;
+      --card:     #1a1a2e;
+      --card2:    #1f1f38;
+      --border:   rgba(255,255,255,0.08);
+      --gold:     #f0c040;
+      --glow:     rgba(240,192,64,0.15);
+      --accent:   #7c6af7;
+      --text:     #f0eeea;
+      --muted:    #8888aa;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      overflow: hidden;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff 30%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .live-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(80,200,80,0.12);
+      border: 1px solid rgba(80,200,80,0.3);
+      color: #6de06d;
+      font-size: 13px; font-weight: 600;
+      padding: 6px 16px; border-radius: 20px;
+    }
+    .live-dot {
+      width: 8px; height: 8px;
+      background: #6de06d; border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .count-badge {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .count-badge span {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* ── QUESTION BAR ── */
+    .question-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      text-align: center;
+      box-shadow: 0 0 40px var(--glow);
+      flex-shrink: 0;
+    }
+    .question-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    .question-text {
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ── CARDS GRID ── */
+    .cards-area {
+      overflow-y: auto;
+      padding: 32px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      align-content: start;
+    }
+
+    /* empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 80px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty-icon { font-size: 56px; opacity: 0.25; }
+    .empty-text { font-size: 20px; font-weight: 500; }
+    .empty-sub  { font-size: 14px; opacity: 0.55; }
+
+    /* answer card */
+    .answer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+      animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .answer-card:hover {
+      border-color: rgba(255,255,255,0.14);
+      background: var(--card2);
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* gold flash for new answers */
+    .answer-card.new-flash {
+      border-color: var(--gold);
+      box-shadow: 0 0 24px var(--glow);
+      animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                 flashBorder 1.8s ease 0.4s forwards;
+    }
+    @keyframes flashBorder {
+      from { border-color: var(--gold); box-shadow: 0 0 24px var(--glow); }
+      to   { border-color: var(--border); box-shadow: none; }
+    }
+
+    .answer-number {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .answer-text {
+      font-size: clamp(20px, 2vw, 26px);
+      font-weight: 500;
+      line-height: 1.65;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .answer-time {
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.45;
+      direction: ltr;
+    }
+
+    /* scrollbar */
+    .cards-area::-webkit-scrollbar { width: 6px; }
+    .cards-area::-webkit-scrollbar-track { background: transparent; }
+    .cards-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">קיר הדילמות הניהוליות</div>
+  <div class="count-badge">תשובות: <span id="countNum">0</span></div>
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    זמן אמת
+  </div>
+</div>
+
+<!-- QUESTION -->
+<div class="question-bar">
+  <div class="question-label">הדילמה שלנו היום</div>
+  <div class="question-text" id="questionText">טוען שאלה…</div>
+</div>
+
+<!-- CARDS -->
+<div class="cards-area" id="cardsArea">
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">💬</div>
+    <div class="empty-text">ממתין לתשובות…</div>
+    <div class="empty-sub">המשתתפים יכולים לשלוח תשובות עכשיו</div>
+  </div>
+</div>
+
+<script>
+  let answers = [];
+  let knownIds = new Set();
+
+  async function loadQuestion() {
+    try {
+      const res = await fetch('/api/question');
+      const d = await res.json();
+      document.getElementById('questionText').textContent = d.question;
+    } catch {}
+  }
+
+  async function fetchAnswers() {
+    try {
+      const res = await fetch('/api/answers');
+      const data = await res.json();
+      const newOnes = data.filter(a => !knownIds.has(a.id));
+      if (newOnes.length > 0) {
+        newOnes.forEach(a => knownIds.add(a.id));
+        answers = data;
+        renderCards(newOnes.map(a => a.id));
+      }
+    } catch {}
+  }
+
+  function renderCards(flashIds = []) {
+    const area = document.getElementById('cardsArea');
+    const empty = document.getElementById('emptyState');
+    area.querySelectorAll('.answer-card').forEach(c => c.remove());
+
+    document.getElementById('countNum').textContent = answers.length;
+
+    if (answers.length === 0) {
+      empty.style.display = 'flex';
+      return;
+    }
+    empty.style.display = 'none';
+
+    [...answers].reverse().forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'answer-card' + (flashIds.includes(a.id) ? ' new-flash' : '');
+      card.innerHTML = `
+        <div class="answer-number"># ${answers.length - i}</div>
+        <div class="answer-text">${escapeHTML(a.text)}</div>
+        <div class="answer-time">${formatTime(a.timestamp)}</div>
+      `;
+      area.appendChild(card);
+    });
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function formatTime(iso) {
+    try {
+      return new Date(iso).toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' });
+    } catch { return ''; }
+  }
+
+  loadQuestion();
+  fetchAnswers();
+  setInterval(fetchAnswers, 3000);
+  setInterval(loadQuestion, 10000);
+</script>
+</body>
+</html>
